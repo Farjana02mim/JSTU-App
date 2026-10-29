@@ -18,14 +18,18 @@ class AdminRepositoryImpl : AdminRepository {
         if (com.example.core.config.AppEnvironment.isDemo) AdminSystemMetrics()
         else AdminSystemMetrics(
             totalStudents = 0,
-            totalFaculty = 0,
-            activeDepartments = 0,
-            revenueCollected = 0.0,
-            pendingFeesDue = 0.0,
-            serverUptimePercentage = 0.0,
-            openSupportTickets = 0,
-            cloudDbSyncRate = 0.0,
-            activeSessionsToday = 0
+            totalTeachers = 0,
+            totalDepartments = 0,
+            totalCourses = 0,
+            todayAttendanceRate = 0.0,
+            todayPaymentsTotal = 0.0,
+            pendingAssignments = 0,
+            publishedResultsCount = 0,
+            admissionApplicationsCount = 0,
+            libraryResourcesCount = 0,
+            storageUsageGb = 0.0,
+            systemHealthPercent = 0,
+            activeAlertsCount = 0
         )
     )
 

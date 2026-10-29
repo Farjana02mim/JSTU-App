@@ -39,7 +39,7 @@ class TeacherRepositoryImpl(
                 email = "",
                 phone = "",
                 officeRoom = "",
-                photoUrl = null,
+                photoUrl = "",
                 researchAreas = emptyList(),
                 joinYear = "",
                 rating = 0.0,

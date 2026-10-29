@@ -106,7 +106,7 @@ class StudentDashboardRepositoryImpl(
                 semester = if (isDemo) "6th Semester" else "",
                 cgpa = if (isDemo) 3.85f else 0.0f,
                 todayAttendancePercent = if (isDemo) 94 else 0,
-                photoUrl = if (isDemo) "https://images.unsplash.com/photo-1534528741775-53994a69daeb" else null,
+                photoUrl = if (isDemo) "https://images.unsplash.com/photo-1534528741775-53994a69daeb" else "",
                 schedules = schedules,
                 notices = notices,
                 assignments = assignments,
