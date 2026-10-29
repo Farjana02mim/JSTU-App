@@ -26,9 +26,13 @@ class ResultRepositoryImpl(
     override fun getCourseResultsForStudent(studentId: String): Flow<List<CourseResult>> {
         return resultDao.getCourseResultsForStudent(studentId).map { entities ->
             if (entities.isEmpty()) {
-                val mockList = generateMockCourseResults(studentId)
-                resultDao.insertCourseResults(mockList.map { it.toEntity() })
-                mockList
+                if (com.example.core.config.AppEnvironment.isDemo) {
+                    val mockList = generateMockCourseResults(studentId)
+                    resultDao.insertCourseResults(mockList.map { it.toEntity() })
+                    mockList
+                } else {
+                    emptyList()
+                }
             } else {
                 entities.map { it.toDomain() }
             }
@@ -48,7 +52,7 @@ class ResultRepositoryImpl(
                 SemesterResult(
                     semesterId = "SEM_$sem",
                     studentId = studentId,
-                    studentName = courseList.firstOrNull()?.studentName ?: "Alex Rivera",
+                    studentName = courseList.firstOrNull()?.studentName ?: "Student",
                     department = courseList.firstOrNull()?.department ?: "Computer Science",
                     semester = sem,
                     academicYear = "2025-2026",
@@ -70,13 +74,17 @@ class ResultRepositoryImpl(
     override fun getTeacherCourseResults(teacherId: String, courseId: String): Flow<List<CourseResult>> {
         return resultDao.getCourseResultsByTeacher(teacherId, courseId).map { entities ->
             if (entities.isEmpty()) {
-                val mock = listOf(
-                    createCourseResult("STD_2026_091", "Alex Rivera", "CS-2026-042", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 9.0, 9.5, 14.0, 26.0, 18.0, 42.0),
-                    createCourseResult("STD_2026_092", "Sarah Jenkins", "CS-2026-015", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 10.0, 10.0, 15.0, 28.0, 20.0, 45.0),
-                    createCourseResult("STD_2026_093", "Michael Chen", "CS-2026-088", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 8.0, 7.5, 12.0, 22.0, 15.0, 36.0)
-                )
-                resultDao.insertCourseResults(mock.map { it.toEntity() })
-                mock
+                if (com.example.core.config.AppEnvironment.isDemo) {
+                    val mock = listOf(
+                        createCourseResult("STD_2026_091", "Student", "CS-2026-042", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 9.0, 9.5, 14.0, 26.0, 18.0, 42.0),
+                        createCourseResult("STD_2026_092", "Sarah Jenkins", "CS-2026-015", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 10.0, 10.0, 15.0, 28.0, 20.0, 45.0),
+                        createCourseResult("STD_2026_093", "Michael Chen", "CS-2026-088", "Semester 6", "CS-301", "Algorithm Analysis", 3.0, 8.0, 7.5, 12.0, 22.0, 15.0, 36.0)
+                    )
+                    resultDao.insertCourseResults(mock.map { it.toEntity() })
+                    mock
+                } else {
+                    emptyList()
+                }
             } else {
                 entities.map { it.toDomain() }
             }
@@ -115,7 +123,7 @@ class ResultRepositoryImpl(
         val transcript = TranscriptModel(
             transcriptId = "TR_${UUID.randomUUID().toString().take(8)}",
             studentId = studentId,
-            studentName = "Alex Rivera",
+            studentName = "Student",
             rollNumber = "CS-2026-042",
             department = "Computer Science & Engineering",
             faculty = "Faculty of Science & Technology",
@@ -133,15 +141,27 @@ class ResultRepositoryImpl(
     }
 
     override suspend fun getUniversityAnalytics(department: String): Result<UniversityResultAnalytics> {
-        val analytics = UniversityResultAnalytics(
-            department = department,
-            totalStudents = 240,
-            passPercentage = 94.5,
-            averageCGPA = 3.42,
-            topPerformers = listOf(Pair("Sarah Jenkins", 3.98), Pair("Alex Rivera", 3.82), Pair("David Miller", 3.78)),
-            gradeDistribution = mapOf("A+" to 45, "A" to 82, "A-" to 60, "B+" to 32, "B" to 14, "F" to 7),
-            gpaTrendPerSemester = mapOf("Sem 1" to 3.25, "Sem 2" to 3.38, "Sem 3" to 3.45, "Sem 4" to 3.52, "Sem 5" to 3.65, "Sem 6" to 3.82)
-        )
+        val analytics = if (com.example.core.config.AppEnvironment.isDemo) {
+            UniversityResultAnalytics(
+                department = department,
+                totalStudents = 240,
+                passPercentage = 94.5,
+                averageCGPA = 3.42,
+                topPerformers = listOf(Pair("Sarah Jenkins", 3.98), Pair("Student", 3.82), Pair("David Miller", 3.78)),
+                gradeDistribution = mapOf("A+" to 45, "A" to 82, "A-" to 60, "B+" to 32, "B" to 14, "F" to 7),
+                gpaTrendPerSemester = mapOf("Sem 1" to 3.25, "Sem 2" to 3.38, "Sem 3" to 3.45, "Sem 4" to 3.52, "Sem 5" to 3.65, "Sem 6" to 3.82)
+            )
+        } else {
+            UniversityResultAnalytics(
+                department = department,
+                totalStudents = 0,
+                passPercentage = 0.0,
+                averageCGPA = 0.0,
+                topPerformers = emptyList(),
+                gradeDistribution = emptyMap(),
+                gpaTrendPerSemester = emptyMap()
+            )
+        }
         return Result.success(analytics)
     }
 

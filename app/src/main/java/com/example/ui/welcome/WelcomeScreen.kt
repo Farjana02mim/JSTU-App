@@ -182,7 +182,7 @@ fun WelcomeScreen(
                     )
                 }
 
-                if (BuildConfig.DEBUG) {
+                if (com.example.core.config.AppEnvironment.isDemo) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Button(

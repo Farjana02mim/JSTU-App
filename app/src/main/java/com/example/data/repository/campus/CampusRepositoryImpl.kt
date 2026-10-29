@@ -18,6 +18,10 @@ class CampusRepositoryImpl(
 ) : CampusRepository {
 
     override fun getBusRoutes(): Flow<List<BusRoute>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         val mockRoutes = listOf(
             BusRoute(
                 routeId = "RT-101",
@@ -69,6 +73,19 @@ class CampusRepositoryImpl(
     }
 
     override fun getTransportPass(): Flow<TransportPass> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(
+                TransportPass(
+                    passId = "",
+                    userUid = "",
+                    routeName = "No transport pass assigned",
+                    validityEndDate = "",
+                    qrPassPayload = "",
+                    feePaid = false
+                )
+            )
+            return@flow
+        }
         emit(
             TransportPass(
                 passId = "PASS-2026-8812",
@@ -82,6 +99,20 @@ class CampusRepositoryImpl(
     }
 
     override fun getHostelAllocation(): Flow<HostelRoomAllocation> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(
+                HostelRoomAllocation(
+                    allocationId = "",
+                    hostelName = "No Hostel Allocation",
+                    roomNumber = "-",
+                    bedNumber = "-",
+                    roommateNames = emptyList(),
+                    monthlyFeeAmount = 0.0,
+                    isFeePaidThisMonth = false
+                )
+            )
+            return@flow
+        }
         emit(
             HostelRoomAllocation(
                 allocationId = "HAL-402",
@@ -96,6 +127,17 @@ class CampusRepositoryImpl(
     }
 
     override fun getMessMenu(): Flow<MessMenuItem> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(
+                MessMenuItem(
+                    dayOfWeek = "Today",
+                    breakfast = "No menu published yet",
+                    lunch = "No menu published yet",
+                    dinner = "No menu published yet"
+                )
+            )
+            return@flow
+        }
         emit(
             MessMenuItem(
                 dayOfWeek = "Today (Friday Special)",
@@ -108,16 +150,18 @@ class CampusRepositoryImpl(
 
     override fun getHostelLeaveRequests(): Flow<List<HostelLeaveRequest>> = campusDao.getLeaveRequests().map { entities ->
         if (entities.isEmpty()) {
-            listOf(
-                HostelLeaveRequest(
-                    requestId = "LR-901",
-                    studentName = "Tanvir Ahmed",
-                    reason = "Visiting Home for Family Event",
-                    startDate = "10 Aug 2026",
-                    endDate = "13 Aug 2026",
-                    status = "APPROVED"
+            if (com.example.core.config.AppEnvironment.isDemo) {
+                listOf(
+                    HostelLeaveRequest(
+                        requestId = "LR-901",
+                        studentName = "Student",
+                        reason = "Visiting Home for Family Event",
+                        startDate = "10 Aug 2026",
+                        endDate = "13 Aug 2026",
+                        status = "APPROVED"
+                    )
                 )
-            )
+            } else emptyList()
         } else {
             entities.map {
                 HostelLeaveRequest(
@@ -135,7 +179,7 @@ class CampusRepositoryImpl(
     override suspend fun submitLeaveRequest(reason: String, startDate: String, endDate: String) {
         val req = HostelLeaveRequestEntity(
             requestId = "LR-" + System.currentTimeMillis().toString().takeLast(4),
-            studentName = "Tanvir Ahmed",
+            studentName = "Student",
             reason = reason,
             startDate = startDate,
             endDate = endDate,
@@ -146,18 +190,20 @@ class CampusRepositoryImpl(
 
     override fun getEmergencyAlerts(): Flow<List<EmergencyAlert>> = campusDao.getEmergencyAlerts().map { entities ->
         if (entities.isEmpty()) {
-            listOf(
-                EmergencyAlert(
-                    alertId = "EMG-01",
-                    senderName = "Campus Security HQ",
-                    alertType = EmergencyType.GENERAL,
-                    title = "Monsoon Safety Guidance",
-                    message = "Heavy rain expected around campus gates. Use covered overbridge walkway.",
-                    timestamp = System.currentTimeMillis() - 3600000,
-                    isBroadcasting = true,
-                    emergencyHotline = "+880 1700-998877"
+            if (com.example.core.config.AppEnvironment.isDemo) {
+                listOf(
+                    EmergencyAlert(
+                        alertId = "EMG-01",
+                        senderName = "Campus Security HQ",
+                        alertType = EmergencyType.GENERAL,
+                        title = "Monsoon Safety Guidance",
+                        message = "Heavy rain expected around campus gates. Use covered overbridge walkway.",
+                        timestamp = System.currentTimeMillis() - 3600000,
+                        isBroadcasting = true,
+                        emergencyHotline = "+880 1700-998877"
+                    )
                 )
-            )
+            } else emptyList()
         } else {
             entities.map {
                 EmergencyAlert(
@@ -177,7 +223,7 @@ class CampusRepositoryImpl(
     override suspend fun triggerOneTapSos(latitude: Double, longitude: Double): Boolean {
         val alert = EmergencyAlertEntity(
             alertId = "SOS-" + System.currentTimeMillis().toString().takeLast(4),
-            senderName = "Student SOS Trigger (Tanvir Ahmed)",
+            senderName = "Student SOS Trigger",
             alertType = "SECURITY",
             title = "CRITICAL STUDENT SOS BROADCAST",
             message = "Immediate assistance required near Lat: %.4f, Lon: %.4f".format(latitude, longitude),
@@ -190,6 +236,10 @@ class CampusRepositoryImpl(
     }
 
     override fun getDoctorSchedules(): Flow<List<DoctorSchedule>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         emit(
             listOf(
                 DoctorSchedule(
@@ -213,12 +263,16 @@ class CampusRepositoryImpl(
     }
 
     override fun getMedicalAppointments(): Flow<List<MedicalAppointment>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         emit(
             listOf(
                 MedicalAppointment(
                     appointmentId = "APT-301",
                     doctorName = "Dr. Farhana Yasmin",
-                    patientName = "Tanvir Ahmed",
+                    patientName = "Student",
                     appointmentDate = "08 Aug 2026",
                     appointmentTime = "11:30 AM",
                     symptoms = "Routine Health Checkup & Eye Strain",
@@ -238,6 +292,10 @@ class CampusRepositoryImpl(
     }
 
     override fun getCampusBuildings(): Flow<List<CampusBuilding>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         emit(
             listOf(
                 CampusBuilding(
@@ -285,6 +343,10 @@ class CampusRepositoryImpl(
     }
 
     override fun getCampusEvents(): Flow<List<CampusEvent>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         emit(
             listOf(
                 CampusEvent(
@@ -312,6 +374,10 @@ class CampusRepositoryImpl(
     }
 
     override fun getCampusClubs(): Flow<List<CampusClub>> = flow {
+        if (!com.example.core.config.AppEnvironment.isDemo) {
+            emit(emptyList())
+            return@flow
+        }
         emit(
             listOf(
                 CampusClub(
@@ -340,17 +406,19 @@ class CampusRepositoryImpl(
 
     override fun getSupportTickets(): Flow<List<SupportTicket>> = campusDao.getSupportTickets().map { entities ->
         if (entities.isEmpty()) {
-            listOf(
-                SupportTicket(
-                    ticketId = "TCK-8812",
-                    category = "HOSTEL_MAINTENANCE",
-                    subject = "Room 402 Wi-Fi Router Intermittent Signal",
-                    description = "Signal drops frequently during peak study hours.",
-                    priority = "HIGH",
-                    status = "IN_PROGRESS",
-                    createdDate = "06 Aug 2026"
+            if (com.example.core.config.AppEnvironment.isDemo) {
+                listOf(
+                    SupportTicket(
+                        ticketId = "TCK-8812",
+                        category = "HOSTEL_MAINTENANCE",
+                        subject = "Room 402 Wi-Fi Router Intermittent Signal",
+                        description = "Signal drops frequently during peak study hours.",
+                        priority = "HIGH",
+                        status = "IN_PROGRESS",
+                        createdDate = "06 Aug 2026"
+                    )
                 )
-            )
+            } else emptyList()
         } else {
             entities.map {
                 SupportTicket(
@@ -386,13 +454,23 @@ class CampusRepositoryImpl(
 
     override fun getEcoStats(): Flow<EcoSustainabilityStats> = flow {
         emit(
-            EcoSustainabilityStats(
-                totalSheetsSaved = 1420500L,
-                estimatedTreesSaved = 170,
-                carbonDioxideReductionKg = 11364.0,
-                userPersonalScore = 96,
-                personalDigitalTransfers = 184
-            )
+            if (com.example.core.config.AppEnvironment.isDemo) {
+                EcoSustainabilityStats(
+                    totalSheetsSaved = 1420500L,
+                    estimatedTreesSaved = 170,
+                    carbonDioxideReductionKg = 11364.0,
+                    userPersonalScore = 96,
+                    personalDigitalTransfers = 184
+                )
+            } else {
+                EcoSustainabilityStats(
+                    totalSheetsSaved = 0L,
+                    estimatedTreesSaved = 0,
+                    carbonDioxideReductionKg = 0.0,
+                    userPersonalScore = 0,
+                    personalDigitalTransfers = 0
+                )
+            }
         )
     }
 }

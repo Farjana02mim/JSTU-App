@@ -56,44 +56,57 @@ class StudentDashboardRepositoryImpl(
             val savedEmail = dataStoreManager.savedUserEmail.first()?.takeIf { it.isNotBlank() }
             val email = savedEmail ?: ""
 
-            val schedules = getSampleSchedules()
-            val notices = getSampleNotices()
-            val assignments = getSampleAssignments()
-            val banners = getSampleBanners()
-            val performance = PerformanceSummary(
-                attendancePercent = 94,
-                completedAssignments = 18,
-                pendingAssignments = 2,
-                currentGpa = 3.88f,
-                creditsCompleted = 96
-            )
-            val activities = getSampleActivities()
-            val notifications = getSampleNotifications()
+            val isDemo = com.example.core.config.AppEnvironment.isDemo
+            val schedules = if (isDemo) getSampleSchedules() else emptyList()
+            val notices = if (isDemo) getSampleNotices() else emptyList()
+            val assignments = if (isDemo) getSampleAssignments() else emptyList()
+            val banners = if (isDemo) getSampleBanners() else emptyList()
+            val performance = if (isDemo) {
+                PerformanceSummary(
+                    attendancePercent = 94,
+                    completedAssignments = 18,
+                    pendingAssignments = 2,
+                    currentGpa = 3.88f,
+                    creditsCompleted = 96
+                )
+            } else {
+                PerformanceSummary(
+                    attendancePercent = 0,
+                    completedAssignments = 0,
+                    pendingAssignments = 0,
+                    currentGpa = 0.0f,
+                    creditsCompleted = 0
+                )
+            }
+            val activities = if (isDemo) getSampleActivities() else emptyList()
+            val notifications = if (isDemo) getSampleNotifications() else emptyList()
 
             // Cache data into Room
-            try {
-                studentDao.insertNotices(notices.map {
-                    NoticeEntity(it.id, it.title, it.category, it.priority.name, it.publishedTime, it.isRead, it.details)
-                })
-                studentDao.insertSchedules(schedules.map {
-                    ScheduleEntity(it.id, it.subject, it.teacher, it.time, it.room, it.status.name)
-                })
-                studentDao.insertAssignments(assignments.map {
-                    AssignmentEntity(it.id, it.subject, it.title, it.deadline, it.remainingDays, it.submissionStatus, it.progressPercent)
-                })
-                studentDao.insertNotifications(notifications.map {
-                    NotificationEntity(it.id, it.title, it.message, it.category.name, it.timestamp, it.isRead)
-                })
-            } catch (ignored: Exception) { }
+            if (isDemo) {
+                try {
+                    studentDao.insertNotices(notices.map {
+                        NoticeEntity(it.id, it.title, it.category, it.priority.name, it.publishedTime, it.isRead, it.details)
+                    })
+                    studentDao.insertSchedules(schedules.map {
+                        ScheduleEntity(it.id, it.subject, it.teacher, it.time, it.room, it.status.name)
+                    })
+                    studentDao.insertAssignments(assignments.map {
+                        AssignmentEntity(it.id, it.subject, it.title, it.deadline, it.remainingDays, it.submissionStatus, it.progressPercent)
+                    })
+                    studentDao.insertNotifications(notifications.map {
+                        NotificationEntity(it.id, it.title, it.message, it.category.name, it.timestamp, it.isRead)
+                    })
+                } catch (ignored: Exception) { }
+            }
 
             val data = StudentDashboardData(
                 studentName = name,
-                universityId = "S-2026-9041",
-                department = "Computer Science & Engineering",
-                semester = "6th Semester",
-                cgpa = 3.85f,
-                todayAttendancePercent = 94,
-                photoUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
+                universityId = if (isDemo) "S-2026-9041" else "",
+                department = if (isDemo) "Computer Science & Engineering" else "",
+                semester = if (isDemo) "6th Semester" else "",
+                cgpa = if (isDemo) 3.85f else 0.0f,
+                todayAttendancePercent = if (isDemo) 94 else 0,
+                photoUrl = if (isDemo) "https://images.unsplash.com/photo-1534528741775-53994a69daeb" else null,
                 schedules = schedules,
                 notices = notices,
                 assignments = assignments,
@@ -112,7 +125,7 @@ class StudentDashboardRepositoryImpl(
     override fun observeNotifications(): Flow<List<NotificationItem>> {
         return studentDao.getCachedNotifications().map { entities ->
             if (entities.isEmpty()) {
-                getSampleNotifications()
+                if (com.example.core.config.AppEnvironment.isDemo) getSampleNotifications() else emptyList()
             } else {
                 entities.map {
                     NotificationItem(

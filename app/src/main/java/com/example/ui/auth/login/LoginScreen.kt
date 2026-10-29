@@ -148,7 +148,7 @@ fun LoginScreen(
                 textAlign = TextAlign.Center
             )
 
-            if (com.example.BuildConfig.DEBUG) {
+            if (com.example.core.config.AppEnvironment.isDemo) {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Quick Demo Role Switcher

@@ -90,7 +90,7 @@ fun QrPassVerificationScreen(
                 }
             }
 
-            if (com.example.BuildConfig.DEBUG) {
+            if (com.example.core.config.AppEnvironment.isDemo) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Quick Simulation Presets

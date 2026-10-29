@@ -23,12 +23,15 @@ class LibraryRepositoryImpl(
     private val cloudFilesCollection get() = firestore?.collection("cloudFiles")
 
     init {
-        CoroutineScope(Dispatchers.IO).launch {
-            seedSampleDataIfEmpty()
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            CoroutineScope(Dispatchers.IO).launch {
+                seedSampleDataIfEmpty()
+            }
         }
     }
 
     private suspend fun seedSampleDataIfEmpty() {
+        if (!com.example.core.config.AppEnvironment.isDemo) return
         val count = dao.getAllResources().firstOrNull()?.size ?: 0
         if (count == 0) {
             val samples = listOf(

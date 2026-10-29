@@ -19,9 +19,12 @@ class FinanceRepositoryImpl(
     override fun getInvoicesForStudent(studentId: String): Flow<List<InvoiceModel>> {
         return dao.getInvoicesForStudent(studentId).map { entities ->
             if (entities.isEmpty()) {
-                // Return dummy default mock invoices for demonstration if database is empty
-                val dummyInvoices = createDummyInvoices(studentId)
-                dummyInvoices
+                if (com.example.core.config.AppEnvironment.isDemo) {
+                    val dummyInvoices = createDummyInvoices(studentId)
+                    dummyInvoices
+                } else {
+                    emptyList()
+                }
             } else {
                 entities.map { entity ->
                     InvoiceModel(
@@ -85,10 +88,13 @@ class FinanceRepositoryImpl(
                 )
             )
         } else {
-            // Check fallback dummy
-            val dummy = createDummyInvoices("STU-1001").find { it.invoiceId == invoiceId }
-            if (dummy != null) Result.success(dummy)
-            else Result.failure(Exception("Invoice not found"))
+            if (com.example.core.config.AppEnvironment.isDemo) {
+                val dummy = createDummyInvoices("STU-1001").find { it.invoiceId == invoiceId }
+                if (dummy != null) Result.success(dummy)
+                else Result.failure(Exception("Invoice not found"))
+            } else {
+                Result.failure(Exception("Invoice not found"))
+            }
         }
     }
 

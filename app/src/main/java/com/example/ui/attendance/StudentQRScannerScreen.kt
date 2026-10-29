@@ -105,7 +105,7 @@ fun StudentQRScannerScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                if (BuildConfig.DEBUG) {
+                                if (com.example.core.config.AppEnvironment.isDemo) {
                                     "Camera access is needed to scan teacher's classroom QR code. You can also simulate the scan below."
                                 } else {
                                     "Camera access is needed to scan teacher's classroom QR code."
@@ -120,7 +120,7 @@ fun StudentQRScannerScreen(
                             ) {
                                 Text("Grant Permission")
                             }
-                            if (BuildConfig.DEBUG) {
+                            if (com.example.core.config.AppEnvironment.isDemo) {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 OutlinedButton(
                                     onClick = {

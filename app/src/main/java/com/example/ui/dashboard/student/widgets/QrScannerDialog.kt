@@ -77,7 +77,7 @@ fun QrScannerDialog(
                     )
                 }
 
-                if (com.example.BuildConfig.DEBUG) {
+                if (com.example.core.config.AppEnvironment.isDemo) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(

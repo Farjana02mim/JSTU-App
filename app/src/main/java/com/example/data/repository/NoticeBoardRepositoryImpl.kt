@@ -146,7 +146,7 @@ class NoticeBoardRepositoryImpl(
 
     override fun getNotices(): Flow<Resource<List<Notice>>> = callbackFlow {
         val currentCached = dao.getAllCachedNotices().first()
-        if (currentCached.isEmpty()) {
+        if (currentCached.isEmpty() && com.example.core.config.AppEnvironment.isDemo) {
             dao.insertNotices(initialSampleNotices.map { NoticeBoardEntity.fromDomainModel(it) })
             dao.insertNotifications(sampleNotifications.map { NotificationFcmEntity.fromDomainModel(it) })
         }

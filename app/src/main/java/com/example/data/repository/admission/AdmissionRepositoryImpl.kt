@@ -25,12 +25,15 @@ class AdmissionRepositoryImpl(
     private val admitCardCache = MutableStateFlow<Map<String, AdmitCard>>(emptyMap())
 
     init {
-        scope.launch {
-            seedDefaultDataIfEmpty()
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            scope.launch {
+                seedDefaultDataIfEmpty()
+            }
         }
     }
 
     private suspend fun seedDefaultDataIfEmpty() {
+        if (!com.example.core.config.AppEnvironment.isDemo) return
         val defaultDepts = JSONArray(listOf("Computer Science & Engineering", "Electrical Engineering", "Business Administration", "Law & Justice", "Pharmacy")).toString()
         val defaultSessions = listOf(
             AdmissionSessionEntity(

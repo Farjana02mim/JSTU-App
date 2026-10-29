@@ -45,8 +45,16 @@ android {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
+      buildConfigField("Boolean", "IS_DEMO", "false")
+      buildConfigField("Boolean", "IS_PROD", "true")
+      buildConfigField("String", "FLAVOR_MODE", "\"prod\"")
     }
-    debug { signingConfig = signingConfigs.getByName("debugConfig") }
+    debug {
+      signingConfig = signingConfigs.getByName("debugConfig")
+      buildConfigField("Boolean", "IS_DEMO", "true")
+      buildConfigField("Boolean", "IS_PROD", "false")
+      buildConfigField("String", "FLAVOR_MODE", "\"demo\"")
+    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11

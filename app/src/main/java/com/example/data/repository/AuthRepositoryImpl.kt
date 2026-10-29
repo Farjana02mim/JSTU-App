@@ -45,8 +45,7 @@ class AuthRepositoryImpl(
         rememberMe: Boolean
     ): Resource<UserProfile> {
         return try {
-            // Check for pre-configured Demo accounts for quick environment verification
-            if (com.example.BuildConfig.DEBUG && isDemoAccount(email)) {
+            if (com.example.core.config.AppEnvironment.isDemo && isDemoAccount(email)) {
                 val demoProfile = getDemoProfile(email)
                 dataStoreManager.saveUserSession(
                     uid = demoProfile.uid,
@@ -91,6 +90,9 @@ class AuthRepositoryImpl(
 
                 Resource.Success(updatedProfile)
             } else {
+                if (com.example.core.config.AppEnvironment.isProd) {
+                    return Resource.Error("Authentication service is unavailable. Offline access is disabled in production.")
+                }
                 val demoProfile = createFallbackProfile("user_" + UUID.randomUUID().toString().take(8), email, true)
                 dataStoreManager.saveUserSession(
                     uid = demoProfile.uid,
@@ -151,6 +153,9 @@ class AuthRepositoryImpl(
 
                 Resource.Success(finalProfile)
             } else {
+                if (com.example.core.config.AppEnvironment.isProd) {
+                    return Resource.Error("Authentication service is unavailable. Offline registration is disabled in production.")
+                }
                 val fallbackUid = "user_" + UUID.randomUUID().toString().take(8)
                 val fallbackProfile = userProfile.copy(
                     uid = fallbackUid,
@@ -170,6 +175,9 @@ class AuthRepositoryImpl(
         } catch (e: FirebaseAuthUserCollisionException) {
             Resource.Error("An account with this email address already exists.")
         } catch (e: Exception) {
+            if (com.example.core.config.AppEnvironment.isProd) {
+                return Resource.Error(e.localizedMessage ?: "Registration failed. Please check network connection.")
+            }
             // Fallback for local demo/offline testing
             val fallbackUid = "user_" + UUID.randomUUID().toString().take(8)
             val fallbackProfile = userProfile.copy(
@@ -194,11 +202,13 @@ class AuthRepositoryImpl(
         rememberMe: Boolean
     ): Resource<UserProfile> {
         return try {
-            // Google auth simulation/integration
             val currentUser = firebaseAuth?.currentUser
+            if (currentUser == null && com.example.core.config.AppEnvironment.isProd) {
+                return Resource.Error("Google Authentication service is unavailable in production.")
+            }
             val uid = currentUser?.uid ?: ("google_" + UUID.randomUUID().toString().take(8))
             val email = currentUser?.email ?: "google_user@university.edu"
-            val name = currentUser?.displayName ?: "Google Smart User"
+            val name = currentUser?.displayName ?: "Google User"
 
             var profile = fetchProfileFromFirestore(uid)
             if (profile == null) {
@@ -206,10 +216,10 @@ class AuthRepositoryImpl(
                     uid = uid,
                     fullName = name,
                     email = email,
-                    phone = "+1234567890",
+                    phone = "",
                     universityId = "UNI-" + (1000..9999).random(),
-                    department = "Computer Science",
-                    faculty = "Faculty of Engineering",
+                    department = "General",
+                    faculty = "General",
                     semester = "1st Semester",
                     role = UserRole.STUDENT,
                     status = UserStatus.ACTIVE,
@@ -237,7 +247,7 @@ class AuthRepositoryImpl(
 
     override suspend fun sendPasswordResetEmail(email: String): Resource<Unit> {
         return try {
-            if (com.example.BuildConfig.DEBUG && isDemoAccount(email)) {
+            if (com.example.core.config.AppEnvironment.isDemo && isDemoAccount(email)) {
                 return Resource.Success(Unit)
             }
             firebaseAuth?.sendPasswordResetEmail(email)?.await()
@@ -319,6 +329,9 @@ class AuthRepositoryImpl(
     }
 
     private fun createFallbackProfile(uid: String, email: String, emailVerified: Boolean): UserProfile {
+        if (com.example.core.config.AppEnvironment.isProd && firebaseAuth == null) {
+            throw IllegalStateException("Authentication service is unavailable. Offline profiles are disabled in production.")
+        }
         return UserProfile(
             uid = uid,
             fullName = email.substringBefore("@").replace(".", " ").capitalize(),

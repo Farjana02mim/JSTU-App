@@ -14,30 +14,49 @@ class TeacherRepositoryImpl(
 ) : TeacherRepository {
 
     private val profileState = MutableStateFlow(
-        TeacherProfile(
-            teacherId = "T-88219",
-            fullName = "Dr. Sarah Jenkins",
-            designation = "Senior Associate Professor",
-            department = "Computer Science & Engineering",
-            email = "sarah.jenkins@university.edu",
-            phone = "+1 (555) 234-5678",
-            officeRoom = "Building 3, Room 402",
-            photoUrl = "https://picsum.photos/300/300",
-            researchAreas = listOf("Artificial Intelligence", "Distributed Systems", "Cloud Computing"),
-            joinYear = "2018",
-            rating = 4.9,
-            totalStudentsTaught = 1450,
-            isVerified = true
-        )
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            TeacherProfile(
+                teacherId = "T-88219",
+                fullName = "Dr. Sarah Jenkins",
+                designation = "Senior Associate Professor",
+                department = "Computer Science & Engineering",
+                email = "sarah.jenkins@university.edu",
+                phone = "+1 (555) 234-5678",
+                officeRoom = "Building 3, Room 402",
+                photoUrl = "https://picsum.photos/300/300",
+                researchAreas = listOf("Artificial Intelligence", "Distributed Systems", "Cloud Computing"),
+                joinYear = "2018",
+                rating = 4.9,
+                totalStudentsTaught = 1450,
+                isVerified = true
+            )
+        } else {
+            TeacherProfile(
+                teacherId = "",
+                fullName = "Faculty Member",
+                designation = "",
+                department = "",
+                email = "",
+                phone = "",
+                officeRoom = "",
+                photoUrl = null,
+                researchAreas = emptyList(),
+                joinYear = "",
+                rating = 0.0,
+                totalStudentsTaught = 0,
+                isVerified = false
+            )
+        }
     )
 
     private val coursesState = MutableStateFlow(
-        listOf(
-            TeacherCourse(
-                courseId = "CSE-301",
-                courseCode = "CSE-301",
-                courseName = "Algorithms & Complexity",
-                department = "Computer Science & Engineering",
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherCourse(
+                    courseId = "CSE-301",
+                    courseCode = "CSE-301",
+                    courseName = "Algorithms & Complexity",
+                    department = "Computer Science & Engineering",
                 semester = "Semester 5",
                 section = "Section A",
                 totalStudents = 58,
@@ -82,10 +101,12 @@ class TeacherRepositoryImpl(
                 averageAttendanceRate = 94.1
             )
         )
-    )
+    } else emptyList()
+)
 
     private val classesState = MutableStateFlow(
-        listOf(
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
             ClassScheduleItem(
                 id = "cls_1",
                 courseId = "CSE-301",
@@ -129,97 +150,116 @@ class TeacherRepositoryImpl(
                 isAttendanceTaken = false
             )
         )
-    )
+    } else emptyList()
+)
 
     private val tasksState = MutableStateFlow(
-        listOf(
-            TeacherTask(
-                taskId = "tsk_1",
-                title = "Grade CSE-405 Midterm Papers",
-                description = "Evaluate 45 answer scripts with rubrics and upload marks to portal.",
-                courseName = "CSE-405",
-                deadline = "Today, 05:00 PM",
-                type = TaskType.EVALUATION,
-                isCompleted = false,
-                priority = "High"
-            ),
-            TeacherTask(
-                taskId = "tsk_2",
-                title = "Submit CSE-301 Quiz 2 Question Paper",
-                description = "Prepare 5 problem sets covering Graph BFS/DFS.",
-                courseName = "CSE-301",
-                deadline = "Tomorrow, 11:59 PM",
-                type = TaskType.CLASS,
-                isCompleted = false,
-                priority = "Medium"
-            ),
-            TeacherTask(
-                taskId = "tsk_3",
-                title = "Department Academic Committee Meeting",
-                description = "Review 2026-2027 curriculum updates in Conference Room B.",
-                courseName = "CSE Dept",
-                deadline = "Aug 10, 02:00 PM",
-                type = TaskType.MEETING,
-                isCompleted = false,
-                priority = "High"
-            ),
-            TeacherTask(
-                taskId = "tsk_4",
-                title = "Publish Final Assignment 3 Grades",
-                description = "Verify lab demonstrator feedback before publishing.",
-                courseName = "CSE-201",
-                deadline = "Aug 12, 06:00 PM",
-                type = TaskType.RESULT,
-                isCompleted = true,
-                priority = "Low"
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherTask(
+                    taskId = "tsk_1",
+                    title = "Grade CSE-405 Midterm Papers",
+                    description = "Evaluate 45 answer scripts with rubrics and upload marks to portal.",
+                    courseName = "CSE-405",
+                    deadline = "Today, 05:00 PM",
+                    type = TaskType.EVALUATION,
+                    isCompleted = false,
+                    priority = "High"
+                ),
+                TeacherTask(
+                    taskId = "tsk_2",
+                    title = "Submit CSE-301 Quiz 2 Question Paper",
+                    description = "Prepare 5 problem sets covering Graph BFS/DFS.",
+                    courseName = "CSE-301",
+                    deadline = "Tomorrow, 11:59 PM",
+                    type = TaskType.CLASS,
+                    isCompleted = false,
+                    priority = "Medium"
+                ),
+                TeacherTask(
+                    taskId = "tsk_3",
+                    title = "Department Academic Committee Meeting",
+                    description = "Review 2026-2027 curriculum updates in Conference Room B.",
+                    courseName = "CSE Dept",
+                    deadline = "Aug 10, 02:00 PM",
+                    type = TaskType.MEETING,
+                    isCompleted = false,
+                    priority = "High"
+                ),
+                TeacherTask(
+                    taskId = "tsk_4",
+                    title = "Publish Final Assignment 3 Grades",
+                    description = "Verify lab demonstrator feedback before publishing.",
+                    courseName = "CSE-201",
+                    deadline = "Aug 12, 06:00 PM",
+                    type = TaskType.RESULT,
+                    isCompleted = true,
+                    priority = "Low"
+                )
             )
-        )
+        } else emptyList()
     )
 
     private val notificationsState = MutableStateFlow(
-        listOf(
-            TeacherNotification(
-                notificationId = "notif_1",
-                title = "35 Submissions Pending",
-                message = "Students submitted Assignment 2 for CSE-405.",
-                timestamp = "10 mins ago",
-                category = "Assignment",
-                isRead = false
-            ),
-            TeacherNotification(
-                notificationId = "notif_2",
-                title = "Class Reschedule Approved",
-                message = "CSE-301 Thursday lecture rescheduled to 02:00 PM.",
-                timestamp = "1 hour ago",
-                category = "Class",
-                isRead = false
-            ),
-            TeacherNotification(
-                notificationId = "notif_3",
-                title = "Faculty Notice Published",
-                message = "Grade submission deadline extended to Aug 20.",
-                timestamp = "3 hours ago",
-                category = "Notice",
-                isRead = true
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherNotification(
+                    notificationId = "notif_1",
+                    title = "35 Submissions Pending",
+                    message = "Students submitted Assignment 2 for CSE-405.",
+                    timestamp = "10 mins ago",
+                    category = "Assignment",
+                    isRead = false
+                ),
+                TeacherNotification(
+                    notificationId = "notif_2",
+                    title = "Class Reschedule Approved",
+                    message = "CSE-301 Thursday lecture rescheduled to 02:00 PM.",
+                    timestamp = "1 hour ago",
+                    category = "Class",
+                    isRead = false
+                ),
+                TeacherNotification(
+                    notificationId = "notif_3",
+                    title = "Faculty Notice Published",
+                    message = "Grade submission deadline extended to Aug 20.",
+                    timestamp = "3 hours ago",
+                    category = "Notice",
+                    isRead = true
+                )
             )
-        )
+        } else emptyList()
     )
 
     private val analyticsState = MutableStateFlow(
-        TeachingAnalytics(
-            totalTeachingHours = 128.0,
-            overallAttendanceRate = 92.4,
-            avgStudentScore = 84.6,
-            courseProgressAvg = 70.5,
-            totalAssignmentsEvaluated = 380,
-            pendingEvaluations = 14,
-            totalClassesConducted = 48,
-            studentEngagementScore = 95.2
-        )
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            TeachingAnalytics(
+                totalTeachingHours = 128.0,
+                overallAttendanceRate = 92.4,
+                avgStudentScore = 84.6,
+                courseProgressAvg = 70.5,
+                totalAssignmentsEvaluated = 380,
+                pendingEvaluations = 14,
+                totalClassesConducted = 48,
+                studentEngagementScore = 95.2
+            )
+        } else {
+            TeachingAnalytics(
+                totalTeachingHours = 0.0,
+                overallAttendanceRate = 0.0,
+                avgStudentScore = 0.0,
+                courseProgressAvg = 0.0,
+                totalAssignmentsEvaluated = 0,
+                pendingEvaluations = 0,
+                totalClassesConducted = 0,
+                studentEngagementScore = 0.0
+            )
+        }
     )
 
     private val resourcesState = MutableStateFlow(
-        listOf(
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
             CourseResource(
                 resourceId = "res_1",
                 courseId = "CSE-301",
@@ -254,149 +294,158 @@ class TeacherRepositoryImpl(
                 downloadsCount = 61
             )
         )
-    )
+    } else emptyList()
+)
 
     private val studentsState = MutableStateFlow(
-        listOf(
-            TeacherStudentItem(
-                studentId = "STU-1001",
-                studentName = "Arik Rahman",
-                rollNumber = "CSE-2023-014",
-                department = "Computer Science & Engineering",
-                semester = "Semester 5",
-                section = "Section A",
-                courseCode = "CSE-301",
-                attendancePercentage = 95.0,
-                avgGrade = "A+",
-                assignmentsSubmitted = 5,
-                totalAssignments = 5,
-                photoUrl = "https://picsum.photos/150/150",
-                email = "arik.rahman@student.univ.edu",
-                phone = "+1 (555) 901-2211"
-            ),
-            TeacherStudentItem(
-                studentId = "STU-1002",
-                studentName = "Tania Sultana",
-                rollNumber = "CSE-2023-022",
-                department = "Computer Science & Engineering",
-                semester = "Semester 5",
-                section = "Section A",
-                courseCode = "CSE-301",
-                attendancePercentage = 88.0,
-                avgGrade = "A",
-                assignmentsSubmitted = 4,
-                totalAssignments = 5,
-                photoUrl = "https://picsum.photos/151/151",
-                email = "tania.sultana@student.univ.edu",
-                phone = "+1 (555) 901-2212"
-            ),
-            TeacherStudentItem(
-                studentId = "STU-1003",
-                studentName = "Kazi Mahir",
-                rollNumber = "CSE-2022-008",
-                department = "Computer Science & Engineering",
-                semester = "Semester 7",
-                section = "Section B",
-                courseCode = "CSE-405",
-                attendancePercentage = 92.0,
-                avgGrade = "A-",
-                assignmentsSubmitted = 4,
-                totalAssignments = 4,
-                photoUrl = "https://picsum.photos/152/152",
-                email = "kazi.mahir@student.univ.edu",
-                phone = "+1 (555) 901-2213"
-            ),
-            TeacherStudentItem(
-                studentId = "STU-1004",
-                studentName = "Nusrat Jahan",
-                rollNumber = "CSE-2024-041",
-                department = "Computer Science & Engineering",
-                semester = "Semester 3",
-                section = "Section C",
-                courseCode = "CSE-201",
-                attendancePercentage = 78.5,
-                avgGrade = "B+",
-                assignmentsSubmitted = 3,
-                totalAssignments = 4,
-                photoUrl = "https://picsum.photos/153/153",
-                email = "nusrat.jahan@student.univ.edu",
-                phone = "+1 (555) 901-2214"
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherStudentItem(
+                    studentId = "STU-1001",
+                    studentName = "Arik Rahman",
+                    rollNumber = "CSE-2023-014",
+                    department = "Computer Science & Engineering",
+                    semester = "Semester 5",
+                    section = "Section A",
+                    courseCode = "CSE-301",
+                    attendancePercentage = 95.0,
+                    avgGrade = "A+",
+                    assignmentsSubmitted = 5,
+                    totalAssignments = 5,
+                    photoUrl = "https://picsum.photos/150/150",
+                    email = "arik.rahman@student.univ.edu",
+                    phone = "+1 (555) 901-2211"
+                ),
+                TeacherStudentItem(
+                    studentId = "STU-1002",
+                    studentName = "Tania Sultana",
+                    rollNumber = "CSE-2023-022",
+                    department = "Computer Science & Engineering",
+                    semester = "Semester 5",
+                    section = "Section A",
+                    courseCode = "CSE-301",
+                    attendancePercentage = 88.0,
+                    avgGrade = "A",
+                    assignmentsSubmitted = 4,
+                    totalAssignments = 5,
+                    photoUrl = "https://picsum.photos/151/151",
+                    email = "tania.sultana@student.univ.edu",
+                    phone = "+1 (555) 901-2212"
+                ),
+                TeacherStudentItem(
+                    studentId = "STU-1003",
+                    studentName = "Kazi Mahir",
+                    rollNumber = "CSE-2022-008",
+                    department = "Computer Science & Engineering",
+                    semester = "Semester 7",
+                    section = "Section B",
+                    courseCode = "CSE-405",
+                    attendancePercentage = 92.0,
+                    avgGrade = "A-",
+                    assignmentsSubmitted = 4,
+                    totalAssignments = 4,
+                    photoUrl = "https://picsum.photos/152/152",
+                    email = "kazi.mahir@student.univ.edu",
+                    phone = "+1 (555) 901-2213"
+                ),
+                TeacherStudentItem(
+                    studentId = "STU-1004",
+                    studentName = "Nusrat Jahan",
+                    rollNumber = "CSE-2024-041",
+                    department = "Computer Science & Engineering",
+                    semester = "Semester 3",
+                    section = "Section C",
+                    courseCode = "CSE-201",
+                    attendancePercentage = 78.5,
+                    avgGrade = "B+",
+                    assignmentsSubmitted = 3,
+                    totalAssignments = 4,
+                    photoUrl = "https://picsum.photos/153/153",
+                    email = "nusrat.jahan@student.univ.edu",
+                    phone = "+1 (555) 901-2214"
+                )
             )
-        )
+        } else emptyList()
     )
 
     private val noticesState = MutableStateFlow(
-        listOf(
-            TeacherNotice(
-                noticeId = "ntc_1",
-                title = "Midterm Examination Syllabus & Guidelines",
-                content = "Midterm exams for CSE-301 will cover Modules 1 to 4. Closed book exam with 1 page cheat sheet allowed.",
-                targetDepartment = "Computer Science & Engineering",
-                targetCourse = "CSE-301",
-                isPinned = true,
-                publishedAt = "2026-08-04 10:00 AM"
-            ),
-            TeacherNotice(
-                noticeId = "ntc_2",
-                title = "Lab 402 Maintenance Notice",
-                content = "Software updates scheduled for Lab 402 on Friday 2:00 PM. All students must back up local project files.",
-                targetDepartment = "Computer Science & Engineering",
-                targetCourse = "All",
-                isPinned = false,
-                publishedAt = "2026-08-02 04:30 PM"
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherNotice(
+                    noticeId = "ntc_1",
+                    title = "Midterm Examination Syllabus & Guidelines",
+                    content = "Midterm exams for CSE-301 will cover Modules 1 to 4. Closed book exam with 1 page cheat sheet allowed.",
+                    targetDepartment = "Computer Science & Engineering",
+                    targetCourse = "CSE-301",
+                    isPinned = true,
+                    publishedAt = "2026-08-04 10:00 AM"
+                ),
+                TeacherNotice(
+                    noticeId = "ntc_2",
+                    title = "Lab 402 Maintenance Notice",
+                    content = "Software updates scheduled for Lab 402 on Friday 2:00 PM. All students must back up local project files.",
+                    targetDepartment = "Computer Science & Engineering",
+                    targetCourse = "All",
+                    isPinned = false,
+                    publishedAt = "2026-08-02 04:30 PM"
+                )
             )
-        )
+        } else emptyList()
     )
 
     private val messagesState = MutableStateFlow(
-        listOf(
-            TeacherMessage(
-                messageId = "msg_1",
-                senderId = "STU-1001",
-                senderName = "Arik Rahman",
-                receiverId = "T-88219",
-                receiverName = "Dr. Sarah Jenkins",
-                content = "Good afternoon Dr. Sarah, I had a question regarding the DP recurrence relation in Assignment 2 Question 3.",
-                timestamp = "10:15 AM",
-                isRead = false
-            ),
-            TeacherMessage(
-                messageId = "msg_2",
-                senderId = "T-88219",
-                senderName = "Dr. Sarah Jenkins",
-                receiverId = "STU-1001",
-                receiverName = "Arik Rahman",
-                content = "Hello Arik, please check lecture slide 18 for the base case breakdown.",
-                timestamp = "10:20 AM",
-                isRead = true
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                TeacherMessage(
+                    messageId = "msg_1",
+                    senderId = "STU-1001",
+                    senderName = "Arik Rahman",
+                    receiverId = "T-88219",
+                    receiverName = "Dr. Sarah Jenkins",
+                    content = "Good afternoon Dr. Sarah, I had a question regarding the DP recurrence relation in Assignment 2 Question 3.",
+                    timestamp = "10:15 AM",
+                    isRead = false
+                ),
+                TeacherMessage(
+                    messageId = "msg_2",
+                    senderId = "T-88219",
+                    senderName = "Dr. Sarah Jenkins",
+                    receiverId = "STU-1001",
+                    receiverName = "Arik Rahman",
+                    content = "Hello Arik, please check lecture slide 18 for the base case breakdown.",
+                    timestamp = "10:20 AM",
+                    isRead = true
+                )
             )
-        )
+        } else emptyList()
     )
 
     private val calendarEventsState = MutableStateFlow(
-        listOf(
-            AcademicCalendarEvent(
-                eventId = "evt_1",
-                title = "CSE-301 Quiz 2",
-                date = "2026-08-10",
-                eventType = "Exam",
-                description = "In-class 20-minute quiz on Graph BFS/DFS"
-            ),
-            AcademicCalendarEvent(
-                eventId = "evt_2",
-                title = "Department Curriculum Review",
-                date = "2026-08-14",
-                eventType = "Meeting",
-                description = "Annual academic senate meeting"
-            ),
-            AcademicCalendarEvent(
-                eventId = "evt_3",
-                title = "CSE-405 Project Mid-check",
-                date = "2026-08-18",
-                eventType = "Deadline",
-                description = "Kubernetes deployment demo submission"
+        if (com.example.core.config.AppEnvironment.isDemo) {
+            listOf(
+                AcademicCalendarEvent(
+                    eventId = "evt_1",
+                    title = "CSE-301 Quiz 2",
+                    date = "2026-08-10",
+                    eventType = "Exam",
+                    description = "In-class 20-minute quiz on Graph BFS/DFS"
+                ),
+                AcademicCalendarEvent(
+                    eventId = "evt_2",
+                    title = "Department Curriculum Review",
+                    date = "2026-08-14",
+                    eventType = "Meeting",
+                    description = "Annual academic senate meeting"
+                ),
+                AcademicCalendarEvent(
+                    eventId = "evt_3",
+                    title = "CSE-405 Project Mid-check",
+                    date = "2026-08-18",
+                    eventType = "Deadline",
+                    description = "Kubernetes deployment demo submission"
+                )
             )
-        )
+        } else emptyList()
     )
 
     override fun getTeacherProfile(): Flow<TeacherProfile> = profileState.asStateFlow()
